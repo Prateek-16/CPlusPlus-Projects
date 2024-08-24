@@ -1,0 +1,9 @@
+Build exe = g++ Main.cpp Operations.cpp -o MyProgram    -- If not in seperate folders
+
+Run exe = ./Myprogram.exe
+
+If In seperate folders
+
+build exe = g++ ./main/main.cpp ./operations/operations.cpp -Ioperations -o Myprogram   --Ioperations just tells the compiler to look for header files
+
+Run exe = ./Myprogram.exe
