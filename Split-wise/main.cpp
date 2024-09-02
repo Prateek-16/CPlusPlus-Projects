@@ -8,20 +8,20 @@
 
 using namespace std;
 
+class User;
+unordered_map<string, User*> users;     // <userName : user object>
+
 class User {
 public:
     string userId;
     string name;
-    string email;
-    string mobile;
 
-    User(string userId, string name, string email = "", string mobile = "")
-        : userId(userId), name(name), email(email), mobile(mobile) {}
+    User(string userId, string name) : userId(userId), name(name) {}
 };
 
 class Splitwise {
 private:
-    unordered_map<string, User*> users;     // <userId : user object>
+    
     unordered_map<string, unordered_map<string, double>> balances;  // <userId (debt) : <userId (owns) : amount> basically <user 1 owes user2 x amount>  
 
     void addBalance(string paidBy, string userId, double amount) {
@@ -34,9 +34,9 @@ private:
     }
 
 public:
-    void addUser(string userId, string name, string email, string mobile) {
-        if (users.find(userId) == users.end()) {
-            users[userId] = new User(userId, name, email, mobile);
+    void addUser(string userId, string name) {
+        if (users.find(name) == users.end()) {
+            users[name] = new User(userId, name);
         }
     }
 
@@ -117,12 +117,6 @@ public:
 
 int main() {
     Splitwise app;
-    
-    // Adding some users (in a real scenario, this could also be taken as input)
-    // app.addUser("u1", "Alice", "alice@example.com", "1234567890");
-    // app.addUser("u2", "Bob", "bob@example.com", "1234567891");
-    // app.addUser("u3", "Charlie", "charlie@example.com", "1234567892");
-    // app.addUser("u4", "David", "david@example.com", "1234567893");
 
     int n;
     cout << "Enter the Number of Users : ";
@@ -134,6 +128,7 @@ int main() {
         string name;
         cout << "Enter the Name of the User "<<i<<" : ";
         cin >> name;
+        app.addUser(str,name);
     }
 
     cout<<"Users Added Successfully !"<<endl<<"Now you can use Split-wise !"<<endl;
@@ -145,8 +140,9 @@ int main() {
         iss >> action;
 
         if (action == "show") {
-            string userId;
-            iss >> userId;
+            string userName;
+            iss >> userName;
+            string userId = users[userName]->userId;
             app.showBalances(userId);
         }
         else if (action == "expense") {
@@ -159,8 +155,9 @@ int main() {
             iss >> paidBy >> amount >> numUsers;
 
             for (int i = 0; i < numUsers; i++) {
-                string userId;
-                iss >> userId;
+                string userName;
+                iss >> userName;
+                string userId = users[userName]->userId;
                 participants.push_back(userId);
             }
 
@@ -173,10 +170,9 @@ int main() {
                     shares.push_back(share);
                 }
             }
-
-            app.addExpense(paidBy, amount, participants, type, shares);
+            string PaidByUserId = users[paidBy]->userId;
+            app.addExpense(PaidByUserId, amount, participants, type, shares);
         }
     }
-
     return 0;
 }
